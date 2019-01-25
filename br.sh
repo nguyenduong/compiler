@@ -1,5 +1,5 @@
 echo 'compile ATG'
-java -jar Coco.jar  xlang.ATG
+java -jar Coco.jar  $1
 
 echo 'compile java code'
 javac *.java -d ./output
@@ -7,7 +7,7 @@ javac *.java -d ./output
 echo 'test example'
 
 
-java -cp ./output JavaParser ex.x
+java -cp ./output JavaParser $2
 
 
 
