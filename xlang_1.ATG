@@ -1,0 +1,76 @@
+COMPILER xlang
+  
+
+public class Ref<T> {
+    private T value;
+
+    public Ref() {
+    }
+
+    public Ref(T value) {
+        this.value = value;
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return value == null ? null : value.toString();
+    }
+}
+
+static String getString(String generalLex) {
+  if (generalLex.length() > 2) {
+    return generalLex.substring(1, generalLex.length() - 1);
+  } else {
+    return "";
+  }
+}
+
+/*--------------------------------------------------------------------------*/
+CHARACTERS
+  letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
+  digit = "0123456789".
+  cr  = '\r'.
+  lf  = '\n'.
+  tab = '\t'.
+  space = ' '.
+
+TOKENS
+  ident  = letter {letter | digit}.
+  number = digit {digit}.
+  string = '\"' {letter | digit | space} '\"'.
+
+COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "//" TO lf
+
+IGNORE cr + lf + tab
+
+
+
+PRODUCTIONS
+
+/*------------------------------------------------------------------------*/
+
+xlang                    (.  .)
+= "main"
+  '(' ')' 
+  '{'
+  "write"                 
+
+  string                  (. System.out.println("write function: " + getString(t.val)); .)
+  {
+    ','
+    string                (. System.out.println("write function: " + getString(t.val)); .)
+  }
+
+  '}'
+  .
+
+END xlang.
