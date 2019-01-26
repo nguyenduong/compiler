@@ -1,6 +1,6 @@
 # Cách sử dụng
 
-Mở ternal để vào thư mục compiler bạn vừa clone về rồi đánh lệnh sau:
+Mở terminal để vào thư mục compiler bạn vừa clone về rồi đánh lệnh sau:
 
 ./br.sh examples/ex1/xlang_1.ATG  examples/ex1/ex1.x
 
