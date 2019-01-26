@@ -1,0 +1,201 @@
+COMPILER xlang
+
+public class Ref<T> {
+    private T value;
+
+    public Ref() {
+    }
+
+    public Ref(T value) {
+        this.value = value;
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return value == null ? null : value.toString();
+    }
+}
+
+public class RefObj extends Ref<Object> {
+
+}
+
+public class RefInt extends Ref<Integer> {
+  public void setValue(char value) {
+    this.setValue((int)value);
+  } 
+}
+
+public class RefChar extends Ref<Character> {
+
+}
+
+Object add(RefObj v1, RefObj v2) {
+  Object val1 = v1.getValue();
+  Object val2 = v2.getValue();
+
+  if (val1 instanceof Integer && val2 instanceof Integer) {
+    return (Integer)val1 + (Integer)val2;
+  } else if (val1 instanceof String || val2 instanceof String) {
+    return val1.toString() + val2.toString();
+  } else {
+    errors.SemErr("Khong the cong duoc 2 toan hang nay.");
+    return null;
+  }
+}
+
+Object sub(RefObj v1, RefObj v2) {
+  Object val1 = v1.getValue();
+  Object val2 = v2.getValue();
+
+  if (val1 instanceof Integer && val2 instanceof Integer) {
+    return (Integer)val1 - (Integer)val2;
+  } else {
+    errors.SemErr("Khong the tru duoc 2 toan hang nay.");
+    return null;
+  }
+}
+
+Object mul(RefObj v1, RefObj v2) {
+  Object val1 = v1.getValue();
+  Object val2 = v2.getValue();
+
+  if (val1 instanceof Integer && val2 instanceof Integer) {
+    return (Integer)val1 * (Integer)val2;
+  } else {
+    errors.SemErr("Khong the nhan duoc 2 toan hang nay.");    
+  }
+
+  return null;
+}
+
+Object div(RefObj v1, RefObj v2) {
+  Object val1 = v1.getValue();
+  Object val2 = v2.getValue();
+
+  if (val1 instanceof Integer && val2 instanceof Integer) {
+    if ((Integer)val2 == 0) {
+      errors.SemErr("Khong the chia duoc cho 0.");
+    } else {
+      return (Integer)val1 / (Integer)val2;
+    }
+  } else {
+    errors.SemErr("Khong the chia duoc 2 toan hang nay.");    
+  }
+
+  return null;
+}
+
+
+static String getString(String generalLex) {
+  if (generalLex.length() > 2) {
+    return generalLex.substring(1, generalLex.length() - 1);
+  } else {
+    return "";
+  }
+}
+
+/*--------------------------------------------------------------------------*/
+CHARACTERS
+  letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
+  specialChar = " ~!@#$%^&*()_+`<>?,./;:[]{}\\|".
+  digit = "0123456789".
+  cr  = '\r'.
+  lf  = '\n'.
+  tab = '\t'.
+  space = ' '.
+
+TOKENS
+  ident  = letter {letter | digit}.
+  number = digit {digit}.
+  string = '\"' {letter | digit | specialChar} '\"'.
+
+COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "//" TO lf
+
+IGNORE cr + lf + tab
+
+
+
+PRODUCTIONS
+
+/*------------------------------------------------------------------------*/
+
+Express< RefObj value >     
+=                             
+  SimpleExpress<value>
+  {                             
+                                (. RefInt  op = new RefInt(); .)
+    AddOp< op >         
+                                (. RefObj  value2 = new RefObj(); .)
+
+    SimpleExpress<value2>       (. if (op.getValue() == '+' ) 
+                                      value.setValue(add(value, value2));
+                                   else 
+                                      value.setValue(sub(value, value2));
+
+                                .)
+  }
+.
+
+SimpleExpress< RefObj value >   
+=
+  Term < value >
+  {                             (. RefInt op = new RefInt(); .)
+    MulOp<op>                   
+                                (. RefObj value2 = new RefObj(); .)
+
+    Term< value2 >              (. if (op.getValue() == '*' )
+                                      value.setValue(mul(value, value2));
+                                   else 
+                                      value.setValue(div(value, value2));
+                                .)
+  }
+.
+
+Term <RefObj value>
+= number                      (. value.setValue(Integer.parseInt(t.val)); .)
+  | string                     (. value.setValue(getString(t.val)); .)
+
+  |
+  '(' Express< value > ')'
+
+. 
+
+
+MulOp< RefInt op>
+= 
+  '*'           (. op.setValue('*'); .)
+  |
+  '/'           (. op.setValue('/'); .)
+
+.
+
+AddOp< RefInt op>
+= 
+  '+'           (. op.setValue('+'); .)
+  |
+  '-'           (. op.setValue('-'); .)
+
+.
+
+xlang                    (. RefObj value = new RefObj(); .)
+= "main"
+  '(' ')' 
+  '{'
+  "write"                 
+
+  Express< value >        (. System.out.println("write function: " + value.toString()); .)  
+
+  '}'
+  .
+
+END xlang.
