@@ -1,3 +1,3 @@
 main() {
-  write "xin chao:" + 5 * (2 - 4)
+  write "xin chao:" + 5 * (2 - 4), " Test phat"
 }

@@ -141,7 +141,6 @@ Express< RefObj value >
                                       value.setValue(add(value, value2));
                                    else 
                                       value.setValue(sub(value, value2));
-
                                 .)
   }
 .
@@ -161,7 +160,7 @@ SimpleExpress< RefObj value >
   }
 .
 
-Term <RefObj value>
+Term < RefObj value >
 = number                      (. value.setValue(Integer.parseInt(t.val)); .)
   | string                     (. value.setValue(getString(t.val)); .)
 
@@ -171,7 +170,7 @@ Term <RefObj value>
 . 
 
 
-MulOp< RefInt op>
+MulOp< RefInt op >
 = 
   '*'           (. op.setValue('*'); .)
   |
@@ -179,7 +178,7 @@ MulOp< RefInt op>
 
 .
 
-AddOp< RefInt op>
+AddOp< RefInt op >
 = 
   '+'           (. op.setValue('+'); .)
   |
@@ -193,8 +192,11 @@ xlang                    (. RefObj value = new RefObj(); .)
   '{'
   "write"                 
 
-  Express< value >        (. System.out.println("write function: " + value.toString()); .)  
-
+  Express< value >        (. System.out.print(value.toString()); .)  
+  {
+    ','
+    Express< value >        (. System.out.print(value.toString()); .)   
+  }
   '}'
   .
 
